@@ -1,0 +1,21 @@
+# Azure CLI local data
+.azure/
+
+# Environment and secret files
+.env
+.env.*
+*.secret
+*.secrets.*
+*.pem
+*.key
+*.pfx
+*.publishsettings
+
+# Infrastructure state and temporary files
+*.tfstate
+*.tfstate.*
+crash.log
+
+# Operating-system files
+Thumbs.db
+.DS_Store
