@@ -47,7 +47,6 @@ resource storageBlobDiagnostics 'Microsoft.Insights/diagnosticSettings@2021-05-0
   scope: blobService
   properties: {
     workspaceId: logAnalyticsWorkspace.id
-    logAnalyticsDestinationType: 'Dedicated'
     logs: [
       {
         category: 'StorageRead'
@@ -121,12 +120,11 @@ resource keyVaultFailedRequestsAlert 'Microsoft.Insights/scheduledQueryRules@202
   name: 'alert-keyvault-failed-requests'
   location: location
   tags: tags
-  kind: 'LogAlert'
   properties: {
     displayName: 'Key Vault failed requests'
     description: 'Detects failed Key Vault requests and notifies the security action group.'
-    enabled: true
     severity: 2
+    enabled: true
     evaluationFrequency: 'PT15M'
     windowSize: 'PT15M'
     scopes: [
@@ -139,7 +137,7 @@ resource keyVaultFailedRequestsAlert 'Microsoft.Insights/scheduledQueryRules@202
       allOf: [
         {
           criterionType: 'StaticThresholdCriterion'
-          query: '''
+          query: $'''
 AZKVAuditLogs
 | where _ResourceId =~ '${keyVault.id}'
 | where HttpStatusCode >= 300

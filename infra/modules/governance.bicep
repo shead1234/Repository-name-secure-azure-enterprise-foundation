@@ -1,6 +1,12 @@
 targetScope = 'subscription'
 
 param resourceGroupName string
+param allowedLocations array
+
+var allowedLocationsPolicyDefinitionId = tenantResourceId(
+  'Microsoft.Authorization/policyDefinitions',
+  'e56962a6-4747-49cd-b67b-bf8b01975c4c'
+)
 
 resource requireEnvironmentTagPolicy 'Microsoft.Authorization/policyDefinitions@2023-04-01' = {
   name: 'deny-missing-environment-tag'
@@ -26,13 +32,16 @@ resource requireEnvironmentTagPolicy 'Microsoft.Authorization/policyDefinitions@
   }
 }
 
-module environmentTagAssignment 'governance-assignment.bicep' = {
-  name: 'environmentTagPolicyAssignment'
+module governanceAssignments 'governance-assignment.bicep' = {
+  name: 'governancePolicyAssignments'
   scope: resourceGroup(resourceGroupName)
   params: {
-    policyDefinitionId: requireEnvironmentTagPolicy.id
+    environmentTagPolicyDefinitionId: requireEnvironmentTagPolicy.id
+    allowedLocationsPolicyDefinitionId: allowedLocationsPolicyDefinitionId
+    allowedLocations: allowedLocations
   }
 }
 
 output policyDefinitionName string = requireEnvironmentTagPolicy.name
-output policyAssignmentName string = environmentTagAssignment.outputs.policyAssignmentName
+output policyAssignmentName string = governanceAssignments.outputs.policyAssignmentName
+output allowedLocationsPolicyAssignmentName string = governanceAssignments.outputs.allowedLocationsPolicyAssignmentName

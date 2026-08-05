@@ -1,6 +1,11 @@
 using '../main.bicep'
 
 param location = 'eastus'
+
+param allowedLocations = [
+  'eastus'
+]
+
 param resourceGroupName = 'rg-nrg-sef-dev-eus-001'
 
 param virtualNetworkName = 'vnet-nrg-sef-dev-eus-001'
@@ -27,3 +32,8 @@ param tags = {
   DataClassification: 'Internal'
   Criticality: 'Medium'
 }
+
+param budgetName = 'budget-nrg-sef-dev-monthly'
+param budgetAmount = 20
+param budgetStartDate = '2026-08-01T00:00:00Z'
+param budgetEndDate = '2036-08-01T00:00:00Z'

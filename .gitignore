@@ -1,31 +1,30 @@
-# Azure CLI local data
-.azure/
-
-# Environment and secret files
+﻿# Local environment and secret files
 .env
 .env.*
-*.secret
-*.secrets.*
+!.env.example
 *.pem
 *.key
 *.pfx
-*.publishsettings
+*.p12
+id_rsa
+id_rsa.*
+id_ed25519
+id_ed25519.*
 
-# Infrastructure state and temporary files
-*.tfstate
-*.tfstate.*
-crash.log
+# Azure CLI local files
+.azure/
 
-# Operating-system files
-Thumbs.db
-.DS_Store
-
-# Generated Bicep JSON files
-infra/**/*.json
-
-# Local editor files
+# Editor files
 .vscode/
+.idea/
 
-# Logs and temporary files
-*.log
+# Temporary and backup files
+*.backup-*
+*.bak
 *.tmp
+*.log
+
+# Operating system files
+.DS_Store
+Thumbs.db
+desktop.ini

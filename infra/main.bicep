@@ -1,6 +1,7 @@
-targetScope = 'subscription'
+﻿targetScope = 'subscription'
 
 param location string
+param allowedLocations array
 param resourceGroupName string
 param tags object
 
@@ -23,6 +24,19 @@ param recoveryServicesVaultName string
 @secure()
 param alertEmail string
 
+@description('Name of the monthly project budget.')
+param budgetName string
+
+@description('Monthly budget amount in USD.')
+@minValue(1)
+param budgetAmount int = 20
+
+@description('First day of the budget period.')
+param budgetStartDate string
+
+@description('End date of the budget period.')
+param budgetEndDate string
+
 resource projectResourceGroup 'Microsoft.Resources/resourceGroups@2025-04-01' = {
   name: resourceGroupName
   location: location
@@ -33,6 +47,7 @@ module governance 'modules/governance.bicep' = {
   name: 'governanceDeployment'
   params: {
     resourceGroupName: resourceGroupName
+    allowedLocations: allowedLocations
   }
   dependsOn: [
     projectResourceGroup
@@ -101,6 +116,18 @@ module backup 'modules/backup.bicep' = {
   }
 }
 
+module costManagement './modules/cost-management.bicep' = {
+  name: 'deploy-cost-management'
+  params: {
+    budgetName: budgetName
+    budgetAmount: budgetAmount
+    budgetStartDate: budgetStartDate
+    budgetEndDate: budgetEndDate
+    contactEmail: alertEmail
+    resourceGroupName: resourceGroupName
+  }
+}
+
 output deployedResourceGroupName string = projectResourceGroup.name
 output deployedVirtualNetworkName string = network.outputs.virtualNetworkName
 
@@ -118,6 +145,10 @@ output deployedKeyVaultAlertName string = monitoring.outputs.keyVaultAlertName
 
 output deployedPolicyDefinitionName string = governance.outputs.policyDefinitionName
 output deployedPolicyAssignmentName string = governance.outputs.policyAssignmentName
+output deployedAllowedLocationsPolicyAssignmentName string = governance.outputs.allowedLocationsPolicyAssignmentName
 
 output deployedRecoveryServicesVaultName string = backup.outputs.recoveryServicesVaultName
 output deployedRecoveryServicesVaultId string = backup.outputs.recoveryServicesVaultId
+
+output costBudgetName string = costManagement.outputs.budgetName
+output costBudgetResourceId string = costManagement.outputs.budgetResourceId
