@@ -19,3 +19,13 @@ crash.log
 # Operating-system files
 Thumbs.db
 .DS_Store
+
+# Generated Bicep JSON files
+infra/**/*.json
+
+# Local editor files
+.vscode/
+
+# Logs and temporary files
+*.log
+*.tmp

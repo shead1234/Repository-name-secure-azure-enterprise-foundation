@@ -1,0 +1,62 @@
+name: Bicep CI
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "infra/**"
+      - ".github/workflows/bicep-ci.yml"
+
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "infra/**"
+      - ".github/workflows/bicep-ci.yml"
+
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Build and lint Bicep
+    runs-on: ubuntu-latest
+
+    env:
+      SSH_PUBLIC_KEY: "ssh-rsa CI_VALIDATION_KEY github-actions"
+      ALERT_EMAIL: "ci-validation@example.com"
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Validate Bicep files
+        uses: azure/CLI@v2
+        with:
+          azcliversion: latest
+          inlineScript: |
+            set -eu
+
+            az bicep install
+
+            echo "Bicep version:"
+            az bicep version
+
+            for file in $(find infra -type f -name '*.bicep' | sort); do
+              echo "Validating $file"
+              az bicep build \
+                --file "$file" \
+                --stdout \
+                --only-show-errors > /dev/null
+            done
+
+            echo "Validating development parameters"
+            az bicep build-params \
+              --file infra/parameters/dev.bicepparam \
+              --stdout \
+              --only-show-errors > /dev/null
+
+            echo "Bicep validation passed."
